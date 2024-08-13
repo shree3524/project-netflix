@@ -1,6 +1,8 @@
+# $${\color{red} \textbf{NETFLIX}}$$
+------------------------------------------------------------------------------------------------------------------
 TMDB API-KEY: 
 ````
-079c53c7a0369363ae29016c9c3b29f6
+ ff663683eb0240472e98f6c51ba4c585
 ````
 
 <div align="center">
@@ -15,7 +17,7 @@ TMDB API-KEY:
 <br />
 
 <div align="center">
-  <img src="./public/assets/home-page.png" alt="Logo" width="100%" height="100%">
+  <img src="https://github.com/user-attachments/assets/543b5e82-1cf0-4e53-8a81-f4a66aead0ae" alt="Logo" width="100%" height="100%">
   <p align="center">Home Page</p>
 </div>
 
@@ -36,7 +38,7 @@ TMDB API-KEY:
 - Clone your application's code repository onto the EC2 instance:
     
     ```bash
-    git clone https
+    git clone https://github.com/shree3524/project-netflix.git
     ```
     
 
@@ -62,6 +64,9 @@ TMDB API-KEY:
 - Create a new API key by clicking "Create" and accepting the terms and conditions.
 - Provide the required basic details and click "Submit."
 - You will receive your TMDB API key.
+
+![Screenshot (278)](https://github.com/user-attachments/assets/f0faa693-9f2a-43a7-954d-2f9a6d083f17)
+ 
 
 Build and run your application using with your api key:
 ```
@@ -156,6 +161,8 @@ Goto Manage Jenkins → Tools → Install JDK(17) and NodeJs(16)→ Click on App
 ### SonarQube
 
 Create the token
+![Screenshot (276)](https://github.com/user-attachments/assets/1cf77738-88f5-4e4e-9433-c5c8a9085d58)
+
 
 Goto Jenkins Dashboard → Manage Jenkins → Credentials → Add Secret Text. It should look like this
 
@@ -173,10 +180,10 @@ Create a Jenkins webhook
 
 1. **Configure CI/CD Pipeline in Jenkins:**
 - Create a CI/CD pipeline in Jenkins to automate your application deployment.
-
-```groovy
+```
 pipeline {
     agent any
+    
     tools {
         jdk 'jdk17'
         nodejs 'node16'
@@ -184,41 +191,24 @@ pipeline {
     environment {
         SCANNER_HOME = tool 'sonar-scanner'
     }
-    stages {
-        stage('clean workspace') {
-            steps {
-                cleanWs()
+    
+    stages{
+        stage('code-checkout'){
+            steps{
+               git branch: 'main', changelog: false, poll: false, url: 'https://github.com/abhipraydhoble/netflix.git' 
             }
         }
-        stage('Checkout from Git') {
-            steps {
-                git branch: 'main', url: 'https://github.com/abhipraydhoble/netflix.git'
-            }
-        }
-        stage("Sonarqube Analysis") {
-            steps {
-                withSonarQubeEnv('sonar-server') {
-                    sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
-                    -Dsonar.projectKey=Netflix'''
-                }
-            }
-        }
-        stage("quality gate") {
-            steps {
-                script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
-                }
-            }
-        }
-        stage('Install Dependencies') {
-            steps {
-                sh "npm install"
+        stage('sonar-analysis'){
+            steps{
+               withSonarQubeEnv('sonar-scanner') {
+                sh '''$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Netflix \
+                    -Dsonar.projectKey=sonar-token'''
+                } 
             }
         }
     }
 }
 ```
-
 Certainly, here are the instructions without step numbers:
 
 **Install Dependency-Check and Docker Tools in Jenkins**
